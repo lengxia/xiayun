@@ -113,6 +113,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -141,6 +142,7 @@
   <ItemGroup>
     <Folder Include="App_Browsers\" />
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Help\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xiayun.DAL\xiayun.DAL.csproj">

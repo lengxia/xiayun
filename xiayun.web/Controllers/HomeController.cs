@@ -47,6 +47,7 @@ namespace xiayun.web.Controllers
                 }
                 fileinfo.Delete(file);
             }
+
             else if (nowdo=="update")
             {
                 foreach (var item in filess)
