@@ -88,11 +88,15 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="#" onclick="addfloder()">新建文件夹</a></li>
-                        <li><a href="#">上传文件</a></li>
+                        <li><a href="#" onclick="btnUploadFile()">上传文件</a></li>
                         <li><a href="#">其他</a></li>
                         <li class="divider"></li>
                         <li><a href="#">分离的链接</a></li>
                     </ul>
+                    <form method="post" enctype="multipart/form-data" id="uploadform" name="uploadform">
+                        <input type="file" style="display:none;" name="name" value="" id="fileUpload" />
+                        <input type="text" style="display:none" name="path" value="@ViewData["path"]" />
+                    </form>
                 </div>
 
             </div>
@@ -108,10 +112,10 @@
                         <div class="list-group" style="margin-top: 50px;">
                             <h4>文件</h4>
                             <a href="~/Home/Index" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-align-center" aria-hidden="true"></span>全部</a>
-                            <a href="#" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>文档</a>
-                            <a href="#" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span>图片</a>
-                            <a href="#" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>视频</a>
-                            <a href="#" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-music" aria-hidden="true"></span>音乐</a>
+                            <a href="~/Home/Index?attr=doc" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>文档</a>
+                            <a href="~/Home/Index?attr=img" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span>图片</a>
+                            <a href="~/Home/Index?attr=video" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>视频</a>
+                            <a href="~/Home/Index?attr=music" class="list-group-item" style="border:none;"><span class="glyphicon glyphicon-music" aria-hidden="true"></span>音乐</a>
                         </div>
 
                     </div>
@@ -145,7 +149,9 @@
                     <ul class="list-group" id="mainlist">
                         @foreach (var item in Model)
                         {
-                            <li class="list-group-item" onclick="location = '@Url.Content("~/Home/Index")?path=@item.FilePath/@item.FileName&nowdo=enter'">
+                            if (item.FileExt == "folder")
+                            {
+                              <li class="list-group-item" onclick="location = '@Url.Content("~/Home/Index")?path=@item.FilePath/@item.FileName&nowdo=enter'">
                                 <div class="row" style="padding: 10px;">
                                     <div class="col-md-4" id="file.@item.Id">@item.FileName</div>
                                     <div class="col-md-4" style="visibility: hidden;" id="listli">
@@ -158,10 +164,28 @@
                                     <div class="col-md-4">@item.UpTime</div>
                                 </div>
                             </li>
+                            }
+                            else
+                            {
+                                <li class="list-group-item">
+                                    <div class="row" style="padding: 10px;">
+                                        <div class="col-md-4" id="file.@item.Id">@item.FileName</div>
+                                        <div class="col-md-4" style="visibility: hidden;" id="listli">
+                                            <a href="#" title="下载"><span class="glyphicon glyphicon-save" aria-hidden="true" style="margin-left: 30px;"></span></a>
+                                            <a href="#" title="修改" onclick="event.cancelBubble=true; updata(@item.Id)"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="margin-left: 30px;"></span></a>
+
+                                            <a href="#" title="删除" onclick="event.cancelBubble=true;del(@item.Id)"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="margin-left: 30px;"></span></a>
+
+                                        </div>
+                                        <div class="col-md-4">@item.UpTime</div>
+                                    </div>
+                                </li>
+                            }
+
                         }
                         
                     </ul>
-                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page,path=@ViewData["path"],search=@ViewData["search"] }))
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page,path=@ViewData["path"],search=@ViewData["search"],attr=@ViewData["attr"] }))
 
 
                 </div>
@@ -171,8 +195,8 @@
     
     <script type="text/javascript" src="~/Scripts/jquery-1.12.2.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
-    <script type="text/javascript" src="js/jquery-1.12.2.min.js"></script>
-
+    
+    <script type="text/javascript" src="~/Scripts/jquery.form.js"></script>
     <script type="text/javascript">
         
         
@@ -236,7 +260,36 @@
                 // alert("no")
             }
         })
+    }
+        function btnUploadFile() {
+            
+            $("#fileUpload").click();
+            
+            return false;
         }
+        $("#fileUpload").change(function () {
+            $("#uploadform").ajaxSubmit(
+                {
+                  
+                    url: "@Url.Content("~/Home/PostedFile")",
+                    type: "post",
+                    clearForm: true,
+                    resetForm: true,
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        alert( data.msg);
+                        window.location.reload();
+                    },
+                    error: function () {
+                        alert("no");
+                    }
+                }
+              
+        );
+            
+        });
+
+
     </script>
 </body>
 
